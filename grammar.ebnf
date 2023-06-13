@@ -1,2 +1,12 @@
+upper =: A | ... | Z
+lower =: a | ... | z
+letter =: upper | lower
+
 digit =: 0 | ... | 9
 decimal =: digit {digit}
+
+reserved =: let | in | where
+
+operations =: + | - | / | *
+
+identifier =: letter {letter}
