@@ -43,9 +43,17 @@ mod tests {
 
     #[test]
     fn should_parse_known_tokens() {
-        let text = "=+";
+        let text = "==";
         let mut lexer = Lexer::new(text);
         assert_eq!(lexer.next(), Token::Assign(0));
-        assert_eq!(lexer.next(), Token::Illegal(1));
+        assert_eq!(lexer.next(), Token::Assign(1));
+        assert_eq!(lexer.next(), Token::EndOfFile(2));
+    }
+
+    #[test]
+    fn should_return_illegal_token() {
+        let text = "?";
+        let mut lexer = Lexer::new(text);
+        assert_eq!(lexer.next(), Token::Illegal(0));
     }
 }
