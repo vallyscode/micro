@@ -5,6 +5,7 @@ pub enum Token {
     Assign(usize),
     Plus(usize),
     Identifier(usize, String),
+    Integer(usize, i64),
     Let(usize),
 }
 
@@ -34,6 +35,12 @@ impl<'a> Lexer<'a> {
                                 Token::Identifier(self.position - identifier.len() - 1, identifier)
                             }
                         };
+                    } else if c.is_digit(10) {
+                        let integer = self.read_integer(c);
+                        return Token::Integer(
+                            self.position - integer.len(),
+                            integer.parse().unwrap(),
+                        );
                     }
                     return Token::Illegal(self.position - 1);
                 }
@@ -54,6 +61,18 @@ impl<'a> Lexer<'a> {
             }
         }
         identifier
+    }
+
+    fn read_integer(&mut self, c: char) -> String {
+        let mut integer = String::from(c);
+        while let Some(c) = self.read_char() {
+            if c.is_digit(10) {
+                integer.push(c);
+            } else {
+                break;
+            }
+        }
+        integer
     }
 
     fn read_char(&mut self) -> Option<char> {
@@ -116,10 +135,11 @@ mod tests {
 
     #[test]
     fn should_read_expression() {
-        let text = "let foo = 10";
+        let text = "let fooBar = 10";
         let mut lexer = Lexer::new(text);
         assert_eq!(lexer.next(), Token::Let(0));
-        assert_eq!(lexer.next(), Token::Identifier(4, "foo".to_string()));
-        assert_eq!(lexer.next(), Token::Assign(8));
+        assert_eq!(lexer.next(), Token::Identifier(4, "fooBar".to_string()));
+        assert_eq!(lexer.next(), Token::Assign(11));
+        assert_eq!(lexer.next(), Token::Integer(13, 10));
     }
 }
