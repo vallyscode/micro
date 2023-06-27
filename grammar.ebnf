@@ -1,12 +1,14 @@
-upper =: A | ... | Z
-lower =: a | ... | z
+upper  =: A | ... | Z
+lower  =: a | ... | z
 letter =: upper | lower
 
-digit =: 0 | ... | 9
+digit   =: 0 | ... | 9
 decimal =: digit {digit}
+integer =: decimal
+float   =: decimal . decimal
 
-reserved =: let | in | where
+reservedid =: let | in | where
 
-operations =: + | - | / | *
+symbol =: + | - | / | *
 
 identifier =: letter {letter}
