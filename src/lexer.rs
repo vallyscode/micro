@@ -6,6 +6,12 @@ pub enum Token {
     // -- symbol
     Assign(usize),
     Plus(usize),
+    Minus(usize),
+    Asterisk(usize),
+    Slash(usize),
+    Dot(usize),
+    LT(usize),
+    GT(usize),
 
     Identifier(usize, String),
     Integer(usize, i64),
@@ -33,6 +39,12 @@ impl<'a> Lexer<'a> {
             let token = match c {
                 '=' => Token::Assign(self.position - 1),
                 '+' => Token::Plus(self.position - 1),
+                '-' => Token::Minus(self.position - 1),
+                '*' => Token::Asterisk(self.position - 1),
+                '/' => Token::Slash(self.position - 1),
+                '.' => Token::Dot(self.position - 1),
+                '<' => Token::LT(self.position - 1),
+                '>' => Token::GT(self.position - 1),
                 _ => {
                     if c.is_alphabetic() {
                         let identifier = self.read_identifier(c);
@@ -96,7 +108,7 @@ impl<'a> Lexer<'a> {
     fn drop_whitespace(&mut self) {
         loop {
             match self.input.chars().next() {
-                Some(c) if c == ' ' => {
+                Some(c) if c == ' ' || c == '\t' || c == '\n' || c == '\r' => {
                     self.position += 1;
                     self.input = &self.input[c.len_utf8()..];
                 }
@@ -109,6 +121,18 @@ impl<'a> Lexer<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn should_parse_assignment() {
+        let text = "
+            let x = 10
+        ";
+        let mut lexer = Lexer::new(text);
+        assert_eq!(lexer.next(), Token::Let(13));
+        assert_eq!(lexer.next(), Token::Identifier(17, "x".to_string()));
+        assert_eq!(lexer.next(), Token::Assign(19));
+        assert_eq!(lexer.next(), Token::Integer(22, 10));
+    }
 
     #[test]
     fn should_create_new_lexer() {
