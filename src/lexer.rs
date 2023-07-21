@@ -20,6 +20,7 @@ pub enum Token {
     Let(usize),
     In(usize),
     Where(usize),
+    Function(usize),
 }
 
 pub struct Lexer<'a> {
@@ -52,12 +53,13 @@ impl<'a> Lexer<'a> {
                             "let" => Token::Let(self.position - 4),
                             "in" => Token::In(self.position - 3),
                             "where" => Token::Where(self.position - 5),
+                            "fn" => Token::Function(self.position - 3),
                             _ => {
                                 Token::Identifier(self.position - identifier.len() - 1, identifier)
                             }
                         };
                     } else if c.is_digit(10) {
-                        let integer = self.read_integer(c);
+                        let integer: String = self.read_integer(c);
                         return Token::Integer(
                             self.position - integer.len(),
                             integer.parse().unwrap(),
@@ -85,7 +87,7 @@ impl<'a> Lexer<'a> {
     }
 
     fn read_integer(&mut self, c: char) -> String {
-        let mut integer = String::from(c);
+        let mut integer: String = String::from(c);
         while let Some(c) = self.read_char() {
             if c.is_digit(10) {
                 integer.push(c);
@@ -97,7 +99,7 @@ impl<'a> Lexer<'a> {
     }
 
     fn read_char(&mut self) -> Option<char> {
-        let maybe_char = self.input.chars().next();
+        let maybe_char: Option<char> = self.input.chars().next();
         if let Some(c) = maybe_char {
             self.position += 1;
             self.input = &self.input[c.len_utf8()..];
@@ -132,6 +134,18 @@ mod tests {
         assert_eq!(lexer.next(), Token::Identifier(17, "x".to_string()));
         assert_eq!(lexer.next(), Token::Assign(19));
         assert_eq!(lexer.next(), Token::Integer(22, 10));
+    }
+
+    #[test]
+    fn should_parse_function() {
+        let text = "
+            let f = fn () => {}
+        ";
+        let mut lexer = Lexer::new(text);
+        assert_eq!(lexer.next(), Token::Let(13));
+        assert_eq!(lexer.next(), Token::Identifier(17, "f".to_string()));
+        assert_eq!(lexer.next(), Token::Assign(19));
+        assert_eq!(lexer.next(), Token::Function(21));
     }
 
     #[test]
