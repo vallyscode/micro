@@ -4,23 +4,24 @@ pub enum Token {
     EndOfFile(usize),
 
     // -- symbol
-    Assign(usize),
-    Plus(usize),
-    Minus(usize),
-    Asterisk(usize),
-    Slash(usize),
-    Dot(usize),
-    LT(usize),
-    GT(usize),
+    Assign(usize), // =
+    Plus(usize), // +
+    Minus(usize), // -
+    Asterisk(usize), // *
+    Slash(usize), // /
+    Colon(usize), // :
+    Dot(usize), // .
+    LT(usize), // <
+    GT(usize), // >
 
     Identifier(usize, String),
     Integer(usize, i64),
 
     // -- reservedid
-    Let(usize),
-    In(usize),
-    Where(usize),
-    Function(usize),
+    Let(usize), // let
+    In(usize), // in
+    Where(usize), // where
+    Function(usize), // fn
 }
 
 pub struct Lexer<'a> {
@@ -43,6 +44,7 @@ impl<'a> Lexer<'a> {
                 '-' => Token::Minus(self.position - 1),
                 '*' => Token::Asterisk(self.position - 1),
                 '/' => Token::Slash(self.position - 1),
+                ':' => Token::Colon(self.position - 1),
                 '.' => Token::Dot(self.position - 1),
                 '<' => Token::LT(self.position - 1),
                 '>' => Token::GT(self.position - 1),
@@ -125,15 +127,32 @@ mod tests {
     use super::*;
 
     #[test]
-    fn should_parse_assignment() {
+    fn should_tokenize_short_assignment() {
         let text = "
-            let x = 10
+            x = 10
         ";
         let mut lexer = Lexer::new(text);
-        assert_eq!(lexer.next(), Token::Let(13));
-        assert_eq!(lexer.next(), Token::Identifier(17, "x".to_string()));
-        assert_eq!(lexer.next(), Token::Assign(19));
-        assert_eq!(lexer.next(), Token::Integer(22, 10));
+        assert_eq!(lexer.next(), Token::Identifier(13, "x".to_string()));
+        assert_eq!(lexer.next(), Token::Assign(15));
+        assert_eq!(lexer.next(), Token::Integer(18, 10));
+        assert_eq!(lexer.next(), Token::EndOfFile(28));
+    }
+
+    #[test]
+    fn should_tokenize_extended_assignment() {
+        let text = "
+            x :: int
+            x = 10
+        ";
+        let mut lexer = Lexer::new(text);
+        assert_eq!(lexer.next(), Token::Identifier(13, "x".to_string()));
+        assert_eq!(lexer.next(), Token::Colon(15));
+        assert_eq!(lexer.next(), Token::Colon(16));
+        assert_eq!(lexer.next(), Token::Identifier(18, "int".to_string()));
+        assert_eq!(lexer.next(), Token::Identifier(34, "x".to_string()));
+        assert_eq!(lexer.next(), Token::Assign(36));
+        assert_eq!(lexer.next(), Token::Integer(39, 10));
+        assert_eq!(lexer.next(), Token::EndOfFile(49));
     }
 
     #[test]
