@@ -1,28 +1,4 @@
-#[derive(Debug, PartialEq)]
-pub enum Token {
-    Illegal(usize),
-    EndOfFile(usize),
-
-    // -- symbol
-    Assign(usize), // =
-    Plus(usize), // +
-    Minus(usize), // -
-    Asterisk(usize), // *
-    Slash(usize), // /
-    Colon(usize), // :
-    Dot(usize), // .
-    LT(usize), // <
-    GT(usize), // >
-
-    Identifier(usize, String),
-    Integer(usize, i64),
-
-    // -- reservedid
-    Let(usize), // let
-    In(usize), // in
-    Where(usize), // where
-    Function(usize), // fn
-}
+use crate::toke::Token;
 
 pub struct Lexer<'a> {
     input: &'a str,
@@ -55,7 +31,6 @@ impl<'a> Lexer<'a> {
                             "let" => Token::Let(self.position - 4),
                             "in" => Token::In(self.position - 3),
                             "where" => Token::Where(self.position - 5),
-                            "fn" => Token::Function(self.position - 3),
                             _ => {
                                 Token::Identifier(self.position - identifier.len() - 1, identifier)
                             }
@@ -139,7 +114,7 @@ mod tests {
     }
 
     #[test]
-    fn should_tokenize_extended_assignment() {
+    fn should_tokenize_verbose_assignment() {
         let text = "
             x :: int
             x = 10
@@ -156,15 +131,37 @@ mod tests {
     }
 
     #[test]
-    fn should_parse_function() {
+    fn should_tokenize_short_function_definition() {
         let text = "
-            let f = fn () => {}
+            id a = a
         ";
         let mut lexer = Lexer::new(text);
-        assert_eq!(lexer.next(), Token::Let(13));
-        assert_eq!(lexer.next(), Token::Identifier(17, "f".to_string()));
-        assert_eq!(lexer.next(), Token::Assign(19));
-        assert_eq!(lexer.next(), Token::Function(21));
+        assert_eq!(lexer.next(), Token::Identifier(13, "id".to_string()));
+        assert_eq!(lexer.next(), Token::Identifier(16, "a".to_string()));
+        assert_eq!(lexer.next(), Token::Assign(18));
+        assert_eq!(lexer.next(), Token::Identifier(20, "a".to_string()));
+        assert_eq!(lexer.next(), Token::EndOfFile(30));
+    }
+
+    #[test]
+    fn should_tokenize_verbose_function_definition() {
+        let text = "
+            id :: a -> a
+            id a = a
+        ";
+        let mut lexer = Lexer::new(text);
+        assert_eq!(lexer.next(), Token::Identifier(13, "id".to_string()));
+        assert_eq!(lexer.next(), Token::Colon(16));
+        assert_eq!(lexer.next(), Token::Colon(17));
+        assert_eq!(lexer.next(), Token::Identifier(19, "a".to_string()));
+        assert_eq!(lexer.next(), Token::Minus(21));
+        assert_eq!(lexer.next(), Token::GT(22));
+        assert_eq!(lexer.next(), Token::Identifier(24, "a".to_string()));
+        assert_eq!(lexer.next(), Token::Identifier(38, "id".to_string()));
+        assert_eq!(lexer.next(), Token::Identifier(41, "a".to_string()));
+        assert_eq!(lexer.next(), Token::Assign(43));
+        assert_eq!(lexer.next(), Token::Identifier(45, "a".to_string()));
+        assert_eq!(lexer.next(), Token::EndOfFile(55));
     }
 
     #[test]
@@ -173,16 +170,6 @@ mod tests {
         let lexer = Lexer::new(text);
         assert_eq!(lexer.input, text);
         assert_eq!(lexer.position, 0);
-    }
-
-    #[test]
-    fn should_parse_known_tokens() {
-        let text = "==+";
-        let mut lexer = Lexer::new(text);
-        assert_eq!(lexer.next(), Token::Assign(0));
-        assert_eq!(lexer.next(), Token::Assign(1));
-        assert_eq!(lexer.next(), Token::Plus(2));
-        assert_eq!(lexer.next(), Token::EndOfFile(3));
     }
 
     #[test]
