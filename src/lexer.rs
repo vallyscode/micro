@@ -177,6 +177,46 @@ mod tests {
     }
 
     #[test]
+    fn should_return_known_tokens() {
+        let text = "
+            =
+            +
+            -
+            *
+            /
+            :
+            .
+            <
+            >
+            (
+            )
+            {
+            }
+            let
+            in
+            where
+        ";
+        let mut lexer = Lexer::new(text);
+        assert_eq!(lexer.next(), Token::Assign(13));
+        assert_eq!(lexer.next(), Token::Plus(27));
+        assert_eq!(lexer.next(), Token::Minus(41));
+        assert_eq!(lexer.next(), Token::Asterisk(55));
+        assert_eq!(lexer.next(), Token::Slash(69));
+        assert_eq!(lexer.next(), Token::Colon(83));
+        assert_eq!(lexer.next(), Token::Dot(97));
+        assert_eq!(lexer.next(), Token::LT(111));
+        assert_eq!(lexer.next(), Token::GT(125));
+        assert_eq!(lexer.next(), Token::LParen(139));
+        assert_eq!(lexer.next(), Token::RParen(153));
+        assert_eq!(lexer.next(), Token::LBrace(167));
+        assert_eq!(lexer.next(), Token::RBrace(181));
+        assert_eq!(lexer.next(), Token::Let(195));
+        assert_eq!(lexer.next(), Token::In(211));
+        assert_eq!(lexer.next(), Token::Where(227));
+        assert_eq!(lexer.next(), Token::EndOfFile(240));
+    }
+
+    #[test]
     fn should_return_illegal_token() {
         let text = "?";
         let mut lexer = Lexer::new(text);
