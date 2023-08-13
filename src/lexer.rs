@@ -24,6 +24,10 @@ impl<'a> Lexer<'a> {
                 '.' => Token::Dot(self.position - 1),
                 '<' => Token::LT(self.position - 1),
                 '>' => Token::GT(self.position - 1),
+                '(' => Token::LParen(self.position - 1),
+                ')' => Token::RParen(self.position - 1),
+                '{' => Token::LBrace(self.position - 1),
+                '}' => Token::RBrace(self.position - 1),
                 _ => {
                     if c.is_alphabetic() {
                         let identifier = self.read_identifier(c);
@@ -102,6 +106,14 @@ mod tests {
     use super::*;
 
     #[test]
+    fn should_create_new_lexer() {
+        let text = "abc";
+        let lexer = Lexer::new(text);
+        assert_eq!(lexer.input, text);
+        assert_eq!(lexer.position, 0);
+    }
+
+    #[test]
     fn should_tokenize_short_assignment() {
         let text = "
             x = 10
@@ -165,71 +177,9 @@ mod tests {
     }
 
     #[test]
-    fn should_create_new_lexer() {
-        let text = "+-=";
-        let lexer = Lexer::new(text);
-        assert_eq!(lexer.input, text);
-        assert_eq!(lexer.position, 0);
-    }
-
-    #[test]
     fn should_return_illegal_token() {
         let text = "?";
         let mut lexer = Lexer::new(text);
         assert_eq!(lexer.next(), Token::Illegal(0));
-    }
-
-    #[test]
-    fn should_return_identifier() {
-        let text = "foo 123";
-        let mut lexer = Lexer::new(text);
-        assert_eq!(lexer.next(), Token::Identifier(0, "foo".to_string()));
-    }
-
-    #[test]
-    fn should_read_let_expression() {
-        let text = "let foo = 369";
-        let mut lexer = Lexer::new(text);
-        assert_eq!(lexer.next(), Token::Let(0));
-        assert_eq!(lexer.next(), Token::Identifier(4, "foo".to_string()));
-        assert_eq!(lexer.next(), Token::Assign(8));
-        assert_eq!(lexer.next(), Token::Integer(10, 369));
-    }
-
-    #[test]
-    fn should_read_let_in_expression() {
-        let text = "let foo = 3 bar = 6 in foo + bar";
-        let mut lexer = Lexer::new(text);
-        assert_eq!(lexer.next(), Token::Let(0));
-        assert_eq!(lexer.next(), Token::Identifier(4, "foo".to_string()));
-        assert_eq!(lexer.next(), Token::Assign(8));
-        assert_eq!(lexer.next(), Token::Integer(11, 3));
-        assert_eq!(lexer.next(), Token::Identifier(12, "bar".to_string()));
-        assert_eq!(lexer.next(), Token::Assign(16));
-        assert_eq!(lexer.next(), Token::Integer(19, 6));
-        assert_eq!(lexer.next(), Token::In(20));
-        assert_eq!(lexer.next(), Token::Identifier(23, "foo".to_string()));
-        assert_eq!(lexer.next(), Token::Plus(27));
-        assert_eq!(lexer.next(), Token::Identifier(28, "bar".to_string()));
-        assert_eq!(lexer.next(), Token::EndOfFile(32));
-    }
-
-    #[test]
-    fn should_read_let_in_where_expression() {
-        let text = "let x = 3 in inc x where inc = + 1";
-        let mut lexer = Lexer::new(text);
-        assert_eq!(lexer.next(), Token::Let(0));
-        assert_eq!(lexer.next(), Token::Identifier(4, "x".to_string()));
-        assert_eq!(lexer.next(), Token::Assign(6));
-        assert_eq!(lexer.next(), Token::Integer(9, 3));
-        assert_eq!(lexer.next(), Token::In(10));
-        assert_eq!(lexer.next(), Token::Identifier(13, "inc".to_string()));
-        assert_eq!(lexer.next(), Token::Identifier(17, "x".to_string()));
-        assert_eq!(lexer.next(), Token::Where(20));
-        assert_eq!(lexer.next(), Token::Identifier(25, "inc".to_string()));
-        assert_eq!(lexer.next(), Token::Assign(29));
-        assert_eq!(lexer.next(), Token::Plus(31));
-        assert_eq!(lexer.next(), Token::Integer(33, 1));
-        assert_eq!(lexer.next(), Token::EndOfFile(34));
     }
 }

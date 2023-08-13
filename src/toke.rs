@@ -13,12 +13,16 @@ pub enum Token {
     Dot(usize),      // .
     LT(usize),       // <
     GT(usize),       // >
+    LParen(usize),   // (
+    RParen(usize),   // )
+    LBrace(usize),   // {
+    RBrace(usize),   // }
 
     Identifier(usize, String),
     Integer(usize, i64),
 
     // -- reservedid
-    Let(usize),      // let
-    In(usize),       // in
-    Where(usize),    // where
+    Let(usize),   // let
+    In(usize),    // in
+    Where(usize), // where
 }
