@@ -226,6 +226,47 @@ mod tests {
     }
 
     #[test]
+    fn should_tokenize_fibonacci() {
+        let text = "
+            f :: int -> int
+            f 0 = 1
+            f 1 = 1
+            f n = f (n - 1) + f (n - 2)
+        ";
+        let mut lexer = Lexer::new(text);
+        assert_eq!(lexer.next(), Token::Identifier(13, "f".to_string()));
+        assert_eq!(lexer.next(), Token::Colon(15));
+        assert_eq!(lexer.next(), Token::Colon(16));
+        assert_eq!(lexer.next(), Token::Identifier(18, "int".to_string()));
+        assert_eq!(lexer.next(), Token::Minus(22));
+        assert_eq!(lexer.next(), Token::GT(23));
+        assert_eq!(lexer.next(), Token::Identifier(25, "int".to_string()));
+        assert_eq!(lexer.next(), Token::Identifier(41, "f".to_string()));
+        assert_eq!(lexer.next(), Token::Integer(44, 0));
+        assert_eq!(lexer.next(), Token::Assign(45));
+        assert_eq!(lexer.next(), Token::Integer(48, 1));
+        assert_eq!(lexer.next(), Token::Identifier(61, "f".to_string()));
+        assert_eq!(lexer.next(), Token::Integer(64, 1));
+        assert_eq!(lexer.next(), Token::Assign(65));
+        assert_eq!(lexer.next(), Token::Integer(68, 1));
+        assert_eq!(lexer.next(), Token::Identifier(81, "f".to_string()));
+        assert_eq!(lexer.next(), Token::Identifier(83, "n".to_string()));
+        assert_eq!(lexer.next(), Token::Assign(85));
+        assert_eq!(lexer.next(), Token::Identifier(87, "f".to_string()));
+        assert_eq!(lexer.next(), Token::LParen(89));
+        assert_eq!(lexer.next(), Token::Identifier(90, "n".to_string()));
+        assert_eq!(lexer.next(), Token::Minus(92));
+        assert_eq!(lexer.next(), Token::Integer(95, 1));
+        assert_eq!(lexer.next(), Token::Plus(97));
+        assert_eq!(lexer.next(), Token::Identifier(99, "f".to_string()));
+        assert_eq!(lexer.next(), Token::LParen(101));
+        assert_eq!(lexer.next(), Token::Identifier(102, "n".to_string()));
+        assert_eq!(lexer.next(), Token::Minus(104));
+        assert_eq!(lexer.next(), Token::Integer(107, 2));
+        assert_eq!(lexer.next(), Token::EndOfFile(117));
+    }
+
+    #[test]
     fn should_return_illegal_token() {
         let text = "?";
         let mut lexer = Lexer::new(text);
