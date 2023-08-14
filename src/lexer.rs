@@ -34,7 +34,10 @@ impl<'a> Lexer<'a> {
                         return match identifier.as_str() {
                             "let" => Token::Let(self.position - 4),
                             "in" => Token::In(self.position - 3),
-                            "where" => Token::Where(self.position - 5),
+                            "where" => Token::Where(self.position - 6),
+                            "if" => Token::If(self.position - 3),
+                            "then" => Token::Then(self.position - 5),
+                            "else" => Token::Else(self.position - 5),
                             _ => {
                                 Token::Identifier(self.position - identifier.len() - 1, identifier)
                             }
@@ -195,6 +198,9 @@ mod tests {
             let
             in
             where
+            if
+            then
+            else
         ";
         let mut lexer = Lexer::new(text);
         assert_eq!(lexer.next(), Token::Assign(13));
@@ -212,8 +218,11 @@ mod tests {
         assert_eq!(lexer.next(), Token::RBrace(181));
         assert_eq!(lexer.next(), Token::Let(195));
         assert_eq!(lexer.next(), Token::In(211));
-        assert_eq!(lexer.next(), Token::Where(227));
-        assert_eq!(lexer.next(), Token::EndOfFile(240));
+        assert_eq!(lexer.next(), Token::Where(226));
+        assert_eq!(lexer.next(), Token::If(244));
+        assert_eq!(lexer.next(), Token::Then(259));
+        assert_eq!(lexer.next(), Token::Else(276));
+        assert_eq!(lexer.next(), Token::EndOfFile(289));
     }
 
     #[test]

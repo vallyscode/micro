@@ -25,4 +25,7 @@ pub enum Token {
     Let(usize),   // let
     In(usize),    // in
     Where(usize), // where
+    If(usize), // if
+    Then(usize), // then
+    Else(usize), // else
 }
