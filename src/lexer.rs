@@ -19,7 +19,11 @@ impl<'a> Lexer<'a> {
 
         match word {
             "=" => Lexeme::Assign(self.position - 1),
-            _ => Lexeme::EndOfFile(self.position - 1),
+            "/" => Lexeme::Slash(self.position - 1),
+            "-" => Lexeme::Minus(self.position - 1),
+            "+" => Lexeme::Plus(self.position - 1),
+            "" => Lexeme::EndOfFile(self.position - 1),
+            _ => Lexeme::Illegal(self.position - 1),
         }
     }
 
@@ -72,17 +76,25 @@ mod tests {
     }
 
     #[test]
-    fn should_parse_lexeme() {
-        let text = " = ";
+    fn should_parse_lexemes() {
+        let text = "
+         = 
+         /
+         -
+         +
+         ";
         let mut lexer = Lexer::new(text);
-        assert_eq!(lexer.next(), Lexeme::Assign(1));
-        assert_eq!(lexer.next(), Lexeme::EndOfFile(2));
+        assert_eq!(lexer.next(), Lexeme::Assign(10));
+        assert_eq!(lexer.next(), Lexeme::Slash(22));
+        assert_eq!(lexer.next(), Lexeme::Minus(33));
+        assert_eq!(lexer.next(), Lexeme::Plus(44));
+        assert_eq!(lexer.next(), Lexeme::EndOfFile(54));
     }
 
-    // #[test]
-    // fn should_return_illegal_token() {
-    //     let text = "?";
-    //     let mut lexer = Lexer::new(text);
-    //     assert_eq!(lexer.next(), Lexeme::Illegal(0));
-    // }
+    #[test]
+    fn should_return_illegal_token() {
+        let text = "?";
+        let mut lexer = Lexer::new(text);
+        assert_eq!(lexer.next(), Lexeme::Illegal(0));
+    }
 }
