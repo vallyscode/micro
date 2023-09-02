@@ -1,9 +1,8 @@
 #[derive(Debug, PartialEq)]
-pub enum Token {
+pub enum Lexeme {
     Illegal(usize),
     EndOfFile(usize),
 
-    // -- symbol
     Assign(usize),   // =
     Plus(usize),     // +
     Minus(usize),    // -
@@ -17,15 +16,4 @@ pub enum Token {
     RParen(usize),   // )
     LBrace(usize),   // {
     RBrace(usize),   // }
-
-    Identifier(usize, String),
-    Integer(usize, i64),
-
-    // -- reservedid
-    Let(usize),   // let
-    In(usize),    // in
-    Where(usize), // where
-    If(usize), // if
-    Then(usize), // then
-    Else(usize), // else
 }
