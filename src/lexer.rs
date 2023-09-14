@@ -22,8 +22,12 @@ impl<'a> Lexer<'a> {
             "/" => Lexeme::Slash(self.position - 1),
             "-" => Lexeme::Minus(self.position - 1),
             "+" => Lexeme::Plus(self.position - 1),
+            "." => Lexeme::Dot(self.position - 1),
             "" => Lexeme::EndOfFile(self.position - 1),
-            _ => Lexeme::Illegal(self.position - 1),
+            "let" => Lexeme::Let(self.position - 3),
+            _ => {
+                return Lexeme::Illegal(self.position - 1);
+            }
         }
     }
 
@@ -64,6 +68,13 @@ fn is_whitespace(c: char) -> bool {
     }
 }
 
+fn is_letter(c: char) -> bool {
+    match c {
+        'a'..='z' | 'A'..='Z' | '_' => true,
+        _ => false,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -82,13 +93,17 @@ mod tests {
          /
          -
          +
+         let
+         .
          ";
         let mut lexer = Lexer::new(text);
         assert_eq!(lexer.next(), Lexeme::Assign(10));
         assert_eq!(lexer.next(), Lexeme::Slash(22));
         assert_eq!(lexer.next(), Lexeme::Minus(33));
         assert_eq!(lexer.next(), Lexeme::Plus(44));
-        assert_eq!(lexer.next(), Lexeme::EndOfFile(54));
+        assert_eq!(lexer.next(), Lexeme::Let(55));
+        assert_eq!(lexer.next(), Lexeme::Dot(68));
+        assert_eq!(lexer.next(), Lexeme::EndOfFile(78));
     }
 
     #[test]

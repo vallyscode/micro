@@ -16,4 +16,6 @@ pub enum Lexeme {
     RParen(usize),   // )
     LBrace(usize),   // {
     RBrace(usize),   // }
+
+    Let(usize), // let
 }
