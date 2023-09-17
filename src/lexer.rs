@@ -15,27 +15,29 @@ impl<'a> Lexer<'a> {
     pub fn next(&mut self) -> Lexeme {
         self.skip_whitespaces();
 
-        let word: &str = self.read_word();
-        let len: usize = word.len();
+        let (word, position) = self.read_word();
 
         match word {
-            "=" => Lexeme::Assign(self.position - 1),
-            "/" => Lexeme::Slash(self.position - 1),
-            "-" => Lexeme::Minus(self.position - 1),
-            "+" => Lexeme::Plus(self.position - 1),
-            "." => Lexeme::Dot(self.position - 1),
+            "=" => Lexeme::Assign(position),
+            "/" => Lexeme::Slash(position),
+            "-" => Lexeme::Minus(position),
+            "+" => Lexeme::Plus(position),
+            "." => Lexeme::Dot(position),
             "" => Lexeme::EndOfFile(self.position - 1),
-            "let" => Lexeme::Let(self.position - 3),
+            "let" => Lexeme::Let(position),
             _ => {
                 if let Ok(n) = i32::from_str(word) {
-                    return Lexeme::Integer(self.position - len, n);
+                    return Lexeme::Integer(position, n);
+                }
+                if let None = word.chars().find(|c| !is_letter(*c)) {
+                    return Lexeme::Identifier(position, word.to_owned());
                 }
                 return Lexeme::Illegal(self.position - 1);
             }
         }
     }
 
-    fn read_word(&mut self) -> &str {
+    fn read_word(&mut self) -> (&str, usize) {
         let mut len: usize = 0;
         let mut chars = self.input.chars();
         while let Some(c) = chars.next() {
@@ -47,10 +49,18 @@ impl<'a> Lexer<'a> {
         }
         let word = &self.input[0..len];
         self.input = &self.input[len..];
-        word
+
+        (
+            word,
+            if word.len() > 0 {
+                self.position - word.len()
+            } else {
+                self.position - 1
+            },
+        )
     }
 
-    fn skip_whitespaces(&mut self) {
+    fn skip_whitespaces(&mut self) -> () {
         let mut len: usize = 0;
         let mut chars: Chars<'_> = self.input.chars();
         while let Some(c) = chars.next() {
@@ -101,6 +111,7 @@ mod tests {
          10
          let
          .
+         letter
          ";
         let mut lexer = Lexer::new(text);
         assert_eq!(lexer.next(), Lexeme::Assign(10));
@@ -111,7 +122,8 @@ mod tests {
         assert_eq!(lexer.next(), Lexeme::Integer(66, 10));
         assert_eq!(lexer.next(), Lexeme::Let(78));
         assert_eq!(lexer.next(), Lexeme::Dot(91));
-        assert_eq!(lexer.next(), Lexeme::EndOfFile(101));
+        assert_eq!(lexer.next(), Lexeme::Identifier(102, "letter".to_string()));
+        assert_eq!(lexer.next(), Lexeme::EndOfFile(117));
     }
 
     #[test]

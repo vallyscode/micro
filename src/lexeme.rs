@@ -16,8 +16,9 @@ pub enum Lexeme {
     RParen(usize),   // )
     LBrace(usize),   // {
     RBrace(usize),   // }
+    Let(usize),      // let
 
-    Let(usize), // let
+    Integer(usize, i32),
 
-    Integer(usize, i32), // 3
+    Identifier(usize, String),
 }
