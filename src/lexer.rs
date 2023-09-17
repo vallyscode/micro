@@ -1,4 +1,4 @@
-use std::str::Chars;
+use std::str::{Chars, FromStr};
 
 use crate::lexeme::Lexeme;
 
@@ -16,6 +16,7 @@ impl<'a> Lexer<'a> {
         self.skip_whitespaces();
 
         let word: &str = self.read_word();
+        let len: usize = word.len();
 
         match word {
             "=" => Lexeme::Assign(self.position - 1),
@@ -26,6 +27,9 @@ impl<'a> Lexer<'a> {
             "" => Lexeme::EndOfFile(self.position - 1),
             "let" => Lexeme::Let(self.position - 3),
             _ => {
+                if let Ok(n) = i32::from_str(word) {
+                    return Lexeme::Integer(self.position - len, n);
+                }
                 return Lexeme::Illegal(self.position - 1);
             }
         }
@@ -92,7 +96,9 @@ mod tests {
          = 
          /
          -
+         3
          +
+         10
          let
          .
          ";
@@ -100,10 +106,12 @@ mod tests {
         assert_eq!(lexer.next(), Lexeme::Assign(10));
         assert_eq!(lexer.next(), Lexeme::Slash(22));
         assert_eq!(lexer.next(), Lexeme::Minus(33));
-        assert_eq!(lexer.next(), Lexeme::Plus(44));
-        assert_eq!(lexer.next(), Lexeme::Let(55));
-        assert_eq!(lexer.next(), Lexeme::Dot(68));
-        assert_eq!(lexer.next(), Lexeme::EndOfFile(78));
+        assert_eq!(lexer.next(), Lexeme::Integer(44, 3));
+        assert_eq!(lexer.next(), Lexeme::Plus(55));
+        assert_eq!(lexer.next(), Lexeme::Integer(66, 10));
+        assert_eq!(lexer.next(), Lexeme::Let(78));
+        assert_eq!(lexer.next(), Lexeme::Dot(91));
+        assert_eq!(lexer.next(), Lexeme::EndOfFile(101));
     }
 
     #[test]

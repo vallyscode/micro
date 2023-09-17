@@ -18,4 +18,6 @@ pub enum Lexeme {
     RBrace(usize),   // }
 
     Let(usize), // let
+
+    Integer(usize, i32), // 3
 }
