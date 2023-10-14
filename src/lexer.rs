@@ -27,6 +27,12 @@ impl<'a> Lexer<'a> {
             "(" => Lexeme::LParen(position),
             ")" => Lexeme::RParen(position),
             "!" => Lexeme::Bang(position),
+            "<" => Lexeme::LT(position),
+            ">" => Lexeme::GT(position),
+            "<=" => Lexeme::LE(position),
+            ">=" => Lexeme::GE(position),
+            "==" => Lexeme::EQ(position),
+            "!=" => Lexeme::NE(position),
             "let" => Lexeme::Let(position),
             _ => {
                 if let Ok(n) = i32::from_str(word) {
@@ -118,6 +124,12 @@ mod tests {
          (
          )
          !
+         <
+         >
+         <=
+         >=
+         ==
+         !=
          ";
         let mut lexer = Lexer::new(text);
         assert_eq!(lexer.next(), Lexeme::Assign(10));
@@ -132,7 +144,13 @@ mod tests {
         assert_eq!(lexer.next(), Lexeme::LParen(118));
         assert_eq!(lexer.next(), Lexeme::RParen(129));
         assert_eq!(lexer.next(), Lexeme::Bang(140));
-        assert_eq!(lexer.next(), Lexeme::EndOfFile(150));
+        assert_eq!(lexer.next(), Lexeme::LT(151));
+        assert_eq!(lexer.next(), Lexeme::GT(162));
+        assert_eq!(lexer.next(), Lexeme::LE(173));
+        assert_eq!(lexer.next(), Lexeme::GE(185));
+        assert_eq!(lexer.next(), Lexeme::EQ(197));
+        assert_eq!(lexer.next(), Lexeme::NE(209));
+        assert_eq!(lexer.next(), Lexeme::EndOfFile(220));
     }
 
     #[test]

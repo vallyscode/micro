@@ -13,6 +13,10 @@ pub enum Lexeme {
     Dot(usize),      // .
     LT(usize),       // <
     GT(usize),       // >
+    LE(usize),       // <=
+    GE(usize),       // >=
+    EQ(usize),       // ==
+    NE(usize),       // !=
     LParen(usize),   // (
     RParen(usize),   // )
     LBrace(usize),   // {
