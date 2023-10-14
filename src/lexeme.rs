@@ -7,6 +7,7 @@ pub enum Lexeme {
     Plus(usize),     // +
     Minus(usize),    // -
     Asterisk(usize), // *
+    Bang(usize),     // !
     Slash(usize),    // /
     Colon(usize),    // :
     Dot(usize),      // .

@@ -26,6 +26,7 @@ impl<'a> Lexer<'a> {
             "" => Lexeme::EndOfFile(self.position - 1),
             "(" => Lexeme::LParen(position),
             ")" => Lexeme::RParen(position),
+            "!" => Lexeme::Bang(position),
             "let" => Lexeme::Let(position),
             _ => {
                 if let Ok(n) = i32::from_str(word) {
@@ -116,6 +117,7 @@ mod tests {
          letter
          (
          )
+         !
          ";
         let mut lexer = Lexer::new(text);
         assert_eq!(lexer.next(), Lexeme::Assign(10));
@@ -129,7 +131,8 @@ mod tests {
         assert_eq!(lexer.next(), Lexeme::Identifier(102, "letter".to_string()));
         assert_eq!(lexer.next(), Lexeme::LParen(118));
         assert_eq!(lexer.next(), Lexeme::RParen(129));
-        assert_eq!(lexer.next(), Lexeme::EndOfFile(139));
+        assert_eq!(lexer.next(), Lexeme::Bang(140));
+        assert_eq!(lexer.next(), Lexeme::EndOfFile(150));
     }
 
     #[test]
