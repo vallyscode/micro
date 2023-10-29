@@ -24,6 +24,8 @@ pub enum Lexeme {
     Let(usize),      // let
 
     Integer(usize, i32),
+    Boolean(usize, bool),
+
 
     Identifier(usize, String),
 }

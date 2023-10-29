@@ -34,6 +34,8 @@ impl<'a> Lexer<'a> {
             "==" => Lexeme::EQ(position),
             "!=" => Lexeme::NE(position),
             "let" => Lexeme::Let(position),
+            "true" => Lexeme::Boolean(position, true),
+            "false" => Lexeme::Boolean(position, false),
             _ => {
                 if let Ok(n) = i32::from_str(word) {
                     return Lexeme::Integer(position, n);
@@ -130,6 +132,8 @@ mod tests {
          >=
          ==
          !=
+         true
+         false
          ";
         let mut lexer = Lexer::new(text);
         assert_eq!(lexer.next(), Lexeme::Assign(10));
@@ -150,7 +154,9 @@ mod tests {
         assert_eq!(lexer.next(), Lexeme::GE(185));
         assert_eq!(lexer.next(), Lexeme::EQ(197));
         assert_eq!(lexer.next(), Lexeme::NE(209));
-        assert_eq!(lexer.next(), Lexeme::EndOfFile(220));
+        assert_eq!(lexer.next(), Lexeme::Boolean(221, true));
+        assert_eq!(lexer.next(), Lexeme::Boolean(235, false));
+        assert_eq!(lexer.next(), Lexeme::EndOfFile(249));
     }
 
     #[test]
