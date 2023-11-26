@@ -9,7 +9,7 @@ edition = "2021"
 
 [dependencies]
 
-[peofile.dev]
+[profile.dev]
 opt-level = 0
 
 [profile.release]
@@ -18,3 +18,6 @@ codegen-units = 1
 lto = "fat"
 panic = "abort"
 strip = "debuginfo"
+
+[build]
+rustflags = ["-C", "target-cpu=native"]
